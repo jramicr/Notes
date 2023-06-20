@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -26,6 +27,7 @@ class NoteListFragment : Fragment() {
             onItemLongClicked = { item -> onListItemClicked(item) }
         )
     }
+    private lateinit var addNoteButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +48,10 @@ class NoteListFragment : Fragment() {
 
     private fun initViews(view: View) {
         with(view) {
+            addNoteButton = findViewById<Button>(R.id.btn_add_note)
+            addNoteButton.setOnClickListener {
+                navigateToFragment(NoteAddFragment())
+            }
             notesRecyclerView = findViewById(R.id.notes_list)
             notesRecyclerView.adapter = adapter
             notesRecyclerView.addItemDecoration(
@@ -67,6 +73,12 @@ class NoteListFragment : Fragment() {
 
     private fun onListItemClicked(noteModel: NoteModel) {
         Toast.makeText(context, "${noteModel.title} was clicked", Toast.LENGTH_LONG).show()
-        // Todo remove item
+        viewModel.deleteNote(noteModel.id)
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }
